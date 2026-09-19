@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/theme_bg"
+    android:padding="16dp">
+
+    <!-- Header & Branding -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="si firda lovely"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@color/accent_primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/powered_by"
+                android:textSize="12sp"
+                android:textColor="@color/text_sub" />
+        </LinearLayout>
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/switchServer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Frida Server"
+            android:textColor="@color/text_main" />
+    </LinearLayout>
+
+    <!-- Status & Install Card -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/theme_card"
+        android:padding="12dp"
+        android:layout_marginTop="12dp">
+
+        <TextView
+            android:id="@+id/txtStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status: Memeriksa environment..."
+            android:textColor="@color/text_main"
+            android:textSize="13sp" />
+
+        <Button
+            android:id="@+id/btnInstallFrida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Install / Update Frida Server"
+            android:visibility="gone"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/accent_success"/>
+    </LinearLayout>
+
+    <!-- Execution Input Panel -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="@color/theme_card"
+        android:padding="12dp"
+        android:layout_marginTop="12dp">
+
+        <EditText
+            android:id="@+id/etPackageName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Target Package (e.g. com.target.app)"
+            android:textColorHint="@color/text_sub"
+            android:textColor="@color/text_main"
+            android:textSize="14sp"
+            android:inputType="textNoSuggestions" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <EditText
+                android:id="@+id/etScriptPath"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Script path (.js)"
+                android:textColorHint="@color/text_sub"
+                android:textColor="@color/text_main"
+                android:textSize="14sp" />
+
+            <Button
+                android:id="@+id/btnPickFile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Browse"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/accent_primary"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="8dp">
+
+            <Button
+                android:id="@+id/btnRun"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="RUN SCRIPT"
+                android:backgroundTint="@color/accent_primary"/>
+
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="STOP"
+                android:enabled="false"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/accent_danger"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Terminal Output -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Terminal Log:"
+        android:textColor="@color/text_sub"
+        android:layout_marginTop="12dp"
+        android:textSize="12sp"/>
+
+    <ScrollView
+        android:id="@+id/scrollTerminal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="@color/terminal_background"
+        android:padding="8dp"
+        android:layout_marginTop="4dp">
+
+        <TextView
+            android:id="@+id/txtTerminal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="monospace"
+            android:textColor="@color/terminal_foreground"
+            android:textSize="11sp"
+            android:text="[si firda lovely Console Initialized]\n" />
+    </ScrollView>
+
+    <!-- Developer Footer -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:text="@string/dev_label"
+        android:textColor="@color/text_sub"
+        android:textSize="11sp"
+        android:layout_marginTop="8dp" />
+
+</LinearLayout>
