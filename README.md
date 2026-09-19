@@ -34,3 +34,4 @@ Aplikasi Android Root untuk mempermudah menjalankan Frida & script hook tanpa ha
 # si-frida-lovely
 # si-frida-lovely
 # si-frida-lovely
+# si-frida-lovely
