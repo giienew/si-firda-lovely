@@ -69,6 +69,15 @@
             android:visibility="gone"
             android:layout_marginTop="8dp"
             android:backgroundTint="@color/accent_success"/>
+
+        <Button
+            android:id="@+id/btnOverlay"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Floating Terminal"
+            android:layout_marginTop="8dp"
+            android:backgroundTint="@color/accent_primary"
+            android:textAllCaps="false"/>
     </LinearLayout>
 
     <!-- Execution Input Panel -->
@@ -113,6 +122,15 @@
                 android:text="Browse"
                 android:layout_marginStart="8dp"
                 android:backgroundTint="@color/accent_primary"/>
+
+            <Button
+                android:id="@+id/btnScripts"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Scripts"
+                android:layout_marginStart="8dp"
+                android:backgroundTint="@color/accent_success"
+                android:textAllCaps="false"/>
         </LinearLayout>
 
         <LinearLayout
