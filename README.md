@@ -33,3 +33,4 @@ Aplikasi Android Root untuk mempermudah menjalankan Frida & script hook tanpa ha
 - Project: [exsalapi.my.id](https://exsalapi.my.id)
 # si-frida-lovely
 # si-frida-lovely
+# si-frida-lovely
