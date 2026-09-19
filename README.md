@@ -32,3 +32,4 @@ Aplikasi Android Root untuk mempermudah menjalankan Frida & script hook tanpa ha
 - Telegram: [@Gieneticc](https://t.me/Gieneticc)
 - Project: [exsalapi.my.id](https://exsalapi.my.id)
 # si-frida-lovely
+# si-frida-lovely
