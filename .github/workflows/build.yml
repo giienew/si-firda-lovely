@@ -1,11 +1,12 @@
-name: Build APK
+name: Build & Release APK
 
 on:
   push:
     branches: [ "main", "master" ]
-  pull_request:
-    branches: [ "main", "master" ]
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
@@ -21,22 +22,48 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
 
-    - name: Setup Gradle
-      uses: gradle/actions/setup-gradle@v3
-
-    - name: Grant execute permission for gradlew
-      run: chmod +x gradlew 2>/dev/null || true
+    - name: Make gradlew executable
+      run: chmod +x gradlew
 
     - name: Build Debug APK
-      run: |
-        if [ -f gradlew ]; then
-          ./gradlew assembleDebug --stacktrace
-        else
-          gradle assembleDebug --stacktrace
-        fi
+      run: ./gradlew assembleDebug --stacktrace
+
+    - name: Build Release APK
+      run: ./gradlew assembleRelease --stacktrace
 
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: si-firda-lovely-debug
-        path: app/build/outputs/apk/debug/*.apk
+        name: si-firda-lovely-apk
+        path: |
+          app/build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/release/*.apk
+
+    - name: Get version
+      id: version
+      run: |
+        VER=$(grep 'versionName' app/build.gradle | head -1 | grep -oP '"\K[^"]+')
+        echo "version=$VER" >> "$GITHUB_OUTPUT"
+        echo "Version: $VER"
+
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v2
+      with:
+        tag_name: v${{ steps.version.outputs.version }}
+        name: "si firda lovely v${{ steps.version.outputs.version }}"
+        body: |
+          ## si firda lovely v${{ steps.version.outputs.version }}
+          
+          **Powered by GIENETIC** | Developer: [@Gieneticc](https://t.me/Gieneticc)
+          
+          Frida GUI for rooted Android (KSU / Magisk / APatch)
+          
+          ### Download
+          Install APK di device yang sudah Root.
+        files: |
+          app/build/outputs/apk/debug/*.apk
+          app/build/outputs/apk/release/*.apk
+        draft: false
+        prerelease: false
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
