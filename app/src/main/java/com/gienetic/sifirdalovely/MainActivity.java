@@ -38,6 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
     private Process runningProcess = null;
     private boolean overlayActive = false;
+    private boolean updatingSwitch = false;
     private static final int PICK_SCRIPT_REQUEST = 101;
     private static final int REQ_OVERLAY_PERM = 202;
     private static final int REQ_NOTIF_PERM = 203;
@@ -49,13 +50,35 @@ public class MainActivity extends AppCompatActivity {
 
         initViews();
         checkStoragePermission();
-        initEnvironment();
+        new Thread(() -> {
+            final boolean hasRoot = RootShell.isRootAvailable();
+            runOnUiThread(() -> {
+                if (!hasRoot) {
+                    txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root di Magisk/KSU, lalu buka ulang app");
+                    txtStatus.setTextColor(getColor(R.color.accent_danger));
+                    setControlsEnabled(false);
+                } else {
+                    initEnvironment();
+                }
+            });
+        }).start();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initEnvironment();
+        new Thread(() -> {
+            final boolean hasRoot = RootShell.isRootAvailable();
+            runOnUiThread(() -> {
+                if (!hasRoot) {
+                    txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root di Magisk/KSU, lalu buka ulang app");
+                    txtStatus.setTextColor(getColor(R.color.accent_danger));
+                    setControlsEnabled(false);
+                } else {
+                    initEnvironment();
+                }
+            });
+        }).start();
     }
 
     private void setControlsEnabled(boolean enabled) {
@@ -83,6 +106,7 @@ public class MainActivity extends AppCompatActivity {
         scrollTerminal = findViewById(R.id.scrollTerminal);
 
         switchServer.setOnCheckedChangeListener((btn, isChecked) -> {
+            if (updatingSwitch) return;
             if (!RootShell.isRootAvailable()) {
                 appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
                 switchServer.setChecked(false);
@@ -120,29 +144,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initEnvironment() {
-        if (!RootShell.isRootAvailable()) {
-            txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root di Magisk/KSU, lalu buka ulang app");
-            txtStatus.setTextColor(getColor(R.color.accent_danger));
-            setControlsEnabled(false);
-            return;
-        }
-
-        setControlsEnabled(true);
-
-        boolean installed = FridaManager.isFridaServerInstalled();
-        boolean running = FridaManager.isFridaRunning();
-
-        if (installed) {
-            String ver = FridaManager.getInstalledVersion();
-            txtStatus.setText("Status: Frida Server " + ver + " (" + (running ? "RUNNING" : "STOPPED") + ")");
-            txtStatus.setTextColor(getColor(R.color.accent_success));
-            switchServer.setChecked(running);
-            btnInstallFrida.setVisibility(View.GONE);
-        } else {
-            txtStatus.setText("Status: frida-server belum ada di /data/local/tmp");
-            txtStatus.setTextColor(getColor(R.color.accent_danger));
-            btnInstallFrida.setVisibility(View.VISIBLE);
-        }
+        // All RootShell calls here are blocking — must run off the main thread.
+        new Thread(() -> {
+            final boolean installed = FridaManager.isFridaServerInstalled();
+            final boolean running = FridaManager.isFridaRunning();
+            final String ver = installed ? FridaManager.getInstalledVersion() : "";
+            runOnUiThread(() -> {
+                setControlsEnabled(true);
+                if (installed) {
+                    txtStatus.setText("Status: Frida Server " + ver + " (" + (running ? "RUNNING" : "STOPPED") + ")");
+                    txtStatus.setTextColor(getColor(R.color.accent_success));
+                    updatingSwitch = true;
+                    switchServer.setChecked(running);
+                    updatingSwitch = false;
+                    btnInstallFrida.setVisibility(View.GONE);
+                } else {
+                    txtStatus.setText("Status: frida-server belum ada di /data/local/tmp");
+                    txtStatus.setTextColor(getColor(R.color.accent_danger));
+                    btnInstallFrida.setVisibility(View.VISIBLE);
+                }
+            });
+        }).start();
     }
 
     private void installFridaOnline() {
@@ -186,57 +208,64 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        if (!RootShell.isRootAvailable()) {
-            appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
-            txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root, lalu restart app");
-            txtStatus.setTextColor(getColor(R.color.accent_danger));
-            setControlsEnabled(false);
-            return;
-        }
-
-        if (!FridaManager.isFridaRunning()) {
-            appendLog("[SYSTEM] frida-server belum jalan, start dulu...");
-            FridaManager.startServer(new SimpleLogCallback("AutoStart"));
-            try { Thread.sleep(1200); } catch (InterruptedException ignored) {}
-            if (!FridaManager.isFridaRunning()) {
-                appendLog("[ERROR] frida-server gagal start. Nyalakan switch Frida Server dulu.");
+        btnRun.setEnabled(false);
+        new Thread(() -> {
+            if (!RootShell.isRootAvailable()) {
+                runOnUiThread(() -> {
+                    appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
+                    txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root, lalu restart app");
+                    txtStatus.setTextColor(getColor(R.color.accent_danger));
+                    setControlsEnabled(false);
+                    btnRun.setEnabled(true);
+                });
                 return;
             }
-        }
 
-        String serverVer = FridaManager.getInstalledVersion().trim();
-        new Thread(() -> {
-            final String clientVer = RootShell.runCommandSync("frida --version 2>/dev/null || echo unknown").trim();
-            runOnUiThread(() -> {
-                if (!"unknown".equals(clientVer) && !clientVer.isEmpty()
-                        && !serverVer.isEmpty() && !serverVer.equals(clientVer)) {
-                    appendLog("[WARN] Version mismatch! server=" + serverVer + " client=" + clientVer);
+            if (!FridaManager.isFridaRunning()) {
+                runOnUiThread(() -> appendLog("[SYSTEM] frida-server belum jalan, start dulu..."));
+                FridaManager.startServer(new SimpleLogCallback("AutoStart"));
+                try { Thread.sleep(1200); } catch (InterruptedException ignored) {}
+                if (!FridaManager.isFridaRunning()) {
+                    runOnUiThread(() -> {
+                        appendLog("[ERROR] frida-server gagal start. Nyalakan switch Frida Server dulu.");
+                        btnRun.setEnabled(true);
+                    });
+                    return;
                 }
+            }
+
+            final String serverVer = FridaManager.getInstalledVersion().trim();
+            final String clientVer = RootShell.runCommandSync("frida --version 2>/dev/null || echo unknown").trim();
+            if (!"unknown".equals(clientVer) && !clientVer.isEmpty()
+                    && !serverVer.isEmpty() && !serverVer.equals(clientVer)) {
+                runOnUiThread(() -> appendLog("[WARN] Version mismatch! server=" + serverVer + " client=" + clientVer));
+            }
+
+            runOnUiThread(() -> {
+                appendLog("\n[START] Hooking target: " + pkg);
+                StringBuilder cmd = new StringBuilder();
+                cmd.append("export PATH=/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin; ");
+                cmd.append("frida -D local -f ").append(pkg);
+                if (!script.isEmpty()) {
+                    cmd.append(" -l '").append(script).append("'");
+                }
+
+                btnRun.setEnabled(false);
+                btnStop.setEnabled(true);
+
+                runningProcess = RootShell.runCommandAsync(cmd.toString(), new RootShell.LogCallback() {
+                    @Override
+                    public void onLog(String line) { appendLog(line); }
+                    @Override
+                    public void onComplete(int exitCode) {
+                        appendLog("[FINISH] Process exited: " + exitCode);
+                        btnRun.setEnabled(true);
+                        btnStop.setEnabled(false);
+                        runningProcess = null;
+                    }
+                });
             });
         }).start();
-
-        appendLog("\n[START] Hooking target: " + pkg);
-        StringBuilder cmd = new StringBuilder();
-        cmd.append("export PATH=/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin; ");
-        cmd.append("frida -D local -f ").append(pkg);
-        if (!script.isEmpty()) {
-            cmd.append(" -l '").append(script).append("'");
-        }
-
-        btnRun.setEnabled(false);
-        btnStop.setEnabled(true);
-
-        runningProcess = RootShell.runCommandAsync(cmd.toString(), new RootShell.LogCallback() {
-            @Override
-            public void onLog(String line) { appendLog(line); }
-            @Override
-            public void onComplete(int exitCode) {
-                appendLog("[FINISH] Process exited: " + exitCode);
-                btnRun.setEnabled(true);
-                btnStop.setEnabled(false);
-                runningProcess = null;
-            }
-        });
     }
 
     private void stopExecution() {
