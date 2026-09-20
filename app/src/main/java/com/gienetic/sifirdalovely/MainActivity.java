@@ -179,8 +179,8 @@ public class MainActivity extends AppCompatActivity {
 
         appendLog("\n[START] Hooking target: " + pkg);
         StringBuilder cmd = new StringBuilder();
-        cmd.append("export PATH=$PATH:/data/data/com.termux/files/usr/bin; ");
-        cmd.append("frida -U -f ").append(pkg);
+        cmd.append("export PATH=/data/data/com.termux/files/usr/bin:/system/bin:/system/xbin; ");
+        cmd.append("frida -D local -f ").append(pkg);
         if (!script.isEmpty()) {
             cmd.append(" -l '").append(script).append("'");
         }
