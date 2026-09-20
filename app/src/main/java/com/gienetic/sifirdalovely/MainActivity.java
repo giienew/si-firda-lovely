@@ -14,6 +14,7 @@ import android.widget.EditText;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -33,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private SwitchMaterial switchServer;
     private TextView txtStatus, txtTerminal;
     private Button btnInstallFrida, btnPickFile, btnRun, btnStop, btnOverlay, btnScripts;
+    private ImageButton btnSettings;
     private EditText etPackageName, etScriptPath;
     private ScrollView scrollTerminal;
 
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         btnStop = findViewById(R.id.btnStop);
         btnOverlay = findViewById(R.id.btnOverlay);
         btnScripts = findViewById(R.id.btnScripts);
+        btnSettings = findViewById(R.id.btnSettings);
         etPackageName = findViewById(R.id.etPackageName);
         etScriptPath = findViewById(R.id.etScriptPath);
         scrollTerminal = findViewById(R.id.scrollTerminal);
@@ -136,6 +139,8 @@ public class MainActivity extends AppCompatActivity {
 
         btnOverlay.setOnClickListener(v -> toggleOverlay());
         btnScripts.setOnClickListener(v -> showBundledScripts());
+        btnSettings.setOnClickListener(v ->
+                startActivity(new Intent(this, SettingsActivity.class)));
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
             btnOverlay.setVisibility(View.GONE);
         } else {

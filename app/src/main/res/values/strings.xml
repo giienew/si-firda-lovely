@@ -3,4 +3,5 @@
     <string name="powered_by">Powered by GIENETIC</string>
     <string name="dev_telegram">@Gieneticc</string>
     <string name="dev_label">Developer: t.me/Gieneticc</string>
+    <string name="about_text">si firda lovely v1.1.0\n\nFrida GUI for rooted Android (KSU / Magisk / APatch).\n\nSpawn/attach target apps, load .js scripts, live floating terminal overlay, Picture-in-Picture.\n\nPowered by GIENETIC\nDeveloper: t.me/Gieneticc</string>
 </resources>

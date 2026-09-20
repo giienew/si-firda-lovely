@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/theme_bg">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent_primary"
+            android:layout_marginBottom="16dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:background="@color/theme_card"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvRootState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Root: checking..."
+                android:textSize="14sp"
+                android:textColor="@color/text_main" />
+
+            <TextView
+                android:id="@+id/tvFridaState"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Frida Server: checking..."
+                android:textSize="14sp"
+                android:textColor="@color/text_main"
+                android:layout_marginTop="6dp" />
+
+            <TextView
+                android:id="@+id/tvArch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:textColor="@color/text_main"
+                android:layout_marginTop="6dp" />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btnAbout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="About"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/accent_primary"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnTele"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Developer: t.me/Gieneticc"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/accent_success"
+            android:layout_marginTop="8dp" />
+
+        <Button
+            android:id="@+id/btnRepo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="GitHub Repository"
+            android:textAllCaps="false"
+            android:backgroundTint="@color/accent_primary"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+</ScrollView>
