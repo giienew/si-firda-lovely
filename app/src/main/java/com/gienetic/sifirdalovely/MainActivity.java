@@ -145,19 +145,27 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
 
         switchServer.setOnCheckedChangeListener((btn, isChecked) -> {
             if (updatingSwitch) return;
-            if (!RootShell.isRootAvailable()) {
-                appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
-                switchServer.setChecked(false);
-                setControlsEnabled(false);
-                return;
-            }
-            if (isChecked) {
+            // Root check must NEVER run on main thread — su blocks 5s = ANR
+            new Thread(() -> {
+                final boolean hasRoot = RootShell.isRootAvailable();
+                runOnUiThread(() -> {
+                    if (!hasRoot) {
+                        appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
+                        updatingSwitch = true;
+                        switchServer.setChecked(false);
+                        updatingSwitch = false;
+                        setControlsEnabled(false);
+                        return;
+                    }
+                    if (isChecked) {
                 appendLog("[SYSTEM] Menjalankan frida-server daemon...");
                 FridaManager.startServer(new SimpleLogCallback("Frida Server ON"));
-            } else {
-                appendLog("[SYSTEM] Mematikan frida-server...");
-                FridaManager.stopServer(new SimpleLogCallback("Frida Server OFF"));
-            }
+                    } else {
+                        appendLog("[SYSTEM] Mematikan frida-server...");
+                        FridaManager.stopServer(new SimpleLogCallback("Frida Server OFF"));
+                    }
+                });
+            }).start();
         });
 
         btnPickFile.setOnClickListener(v -> {
@@ -485,7 +493,15 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
     @Override
     public void onUserLeaveHint() {
         super.onUserLeaveHint();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            try {
+                android.app.PictureInPictureParams params =
+                        new android.app.PictureInPictureParams.Builder()
+                                .setAspectRatio(new android.util.Rational(16, 9))
+                                .build();
+                enterPictureInPictureMode(params);
+            } catch (Exception ignored) {}
+        } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
                 enterPictureInPictureMode(
                         new android.app.PictureInPictureParams.Builder().build());
