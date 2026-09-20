@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="theme_bg">#F8FAFC</color>
+    <color name="theme_bg">#FFF5F8</color>
     <color name="theme_card">#FFFFFF</color>
-    <color name="text_main">#0F172A</color>
-    <color name="text_sub">#64748B</color>
-    <color name="accent_primary">#0284C7</color>
-    <color name="accent_success">#16A34A</color>
-    <color name="accent_danger">#DC2626</color>
-    <color name="terminal_background">#020617</color>
-    <color name="terminal_foreground">#38BDF8</color>
-    <color name="border_color">#E2E8F0</color>
+    <color name="text_main">#4C1E35</color>
+    <color name="text_sub">#9D6B82</color>
+    <color name="accent_primary">#EC4899</color>
+    <color name="accent_success">#DB2777</color>
+    <color name="accent_danger">#E11D48</color>
+    <color name="terminal_background">#2A0E1F</color>
+    <color name="terminal_foreground">#F9A8D4</color>
+    <color name="border_color">#F3D4E3</color>
+    <color name="ic_launcher_background">#EC4899</color>
 </resources>
