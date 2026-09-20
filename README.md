@@ -35,11 +35,8 @@ Built for mobile pentesters, reverse engineers, and the chronically curious.
 
 ## 📱 Screenshots
 
-<!-- TODO: drop screenshots here -->
+> Screenshots coming soon — grab the APK and take your own! 📸
 
-| Home | App Picker | Terminal | PiP Mode |
-|:---:|:---:|:---:|:---:|
-| ![](./docs/home.png) | ![](./docs/picker.png) | ![](./docs/terminal.png) | ![](./docs/pip.png) |
 
 ## 🛠️ Requirements
 

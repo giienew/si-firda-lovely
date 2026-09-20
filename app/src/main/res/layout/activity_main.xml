@@ -80,14 +80,6 @@
             android:layout_marginTop="8dp"
             android:backgroundTint="@color/accent_success"/>
 
-        <Button
-            android:id="@+id/btnOverlay"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Floating Terminal"
-            android:layout_marginTop="8dp"
-            android:backgroundTint="@color/accent_primary"
-            android:textAllCaps="false"/>
     </LinearLayout>
 
     <!-- Execution Input Panel -->
