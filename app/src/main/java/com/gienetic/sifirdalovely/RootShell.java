@@ -5,6 +5,7 @@ import android.os.Looper;
 import java.io.BufferedReader;
 import java.io.DataOutputStream;
 import java.io.InputStreamReader;
+import java.util.concurrent.TimeUnit;
 
 public class RootShell {
 
@@ -19,7 +20,8 @@ public class RootShell {
             DataOutputStream os = new DataOutputStream(p.getOutputStream());
             os.writeBytes("id\nexit\n");
             os.flush();
-            return p.waitFor() == 0;
+            if (!p.waitFor(5, TimeUnit.SECONDS)) { p.destroy(); return false; }
+            return p.exitValue() == 0;
         } catch (Exception e) {
             return false;
         }

@@ -141,14 +141,14 @@ public class OverlayTerminalService extends Service {
         LinearLayout header = new LinearLayout(this);
         header.setOrientation(LinearLayout.HORIZONTAL);
         header.setGravity(Gravity.CENTER_VERTICAL);
-        header.setBackgroundColor(Color.parseColor("#0B1220"));
+        header.setBackgroundColor(Color.parseColor("#2A0E1F"));
         header.setPadding(dp(8), dp(4), dp(8), dp(4));
         LinearLayout.LayoutParams hp = new LinearLayout.LayoutParams(0, LinearLayout.LayoutParams.WRAP_CONTENT, 1f);
         hp.gravity = Gravity.CENTER_VERTICAL;
 
         TextView title = new TextView(this);
         title.setText(" si firda lovely • terminal");
-        title.setTextColor(Color.parseColor("#38BDF8"));
+        title.setTextColor(Color.parseColor("#F9A8D4"));
         title.setTextSize(12f);
         title.setLayoutParams(hp);
         header.addView(title);
@@ -161,8 +161,8 @@ public class OverlayTerminalService extends Service {
         logText = new TextView(this);
         logText.setTypeface(android.graphics.Typeface.MONOSPACE);
         logText.setTextSize(11f);
-        logText.setTextColor(Color.parseColor("#38BDF8"));
-        logText.setBackgroundColor(Color.parseColor("#020617"));
+        logText.setTextColor(Color.parseColor("#F9A8D4"));
+        logText.setBackgroundColor(Color.parseColor("#15070F"));
         logText.setPadding(dp(8), dp(8), dp(8), dp(8));
         logText.setTextIsSelectable(true);
         logText.setMovementMethod(android.text.method.ArrowKeyMovementMethod.getInstance());
@@ -172,13 +172,13 @@ public class OverlayTerminalService extends Service {
         final TextView chip = new TextView(this);
         chip.setText("▣ si firda lovely");
         chip.setTextColor(Color.WHITE);
-        chip.setBackgroundColor(Color.parseColor("#0284C7"));
+        chip.setBackgroundColor(Color.parseColor("#EC4899"));
         chip.setPadding(dp(14), dp(8), dp(14), dp(8));
         chip.setVisibility(View.GONE);
 
         LinearLayout body = new LinearLayout(this);
         body.setOrientation(LinearLayout.VERTICAL);
-        body.setBackgroundColor(Color.parseColor("#020617"));
+        body.setBackgroundColor(Color.parseColor("#15070F"));
         body.addView(header);
         int bodyW = getResources().getDisplayMetrics().widthPixels - dp(16);
         body.getLayoutParams().width = bodyW;

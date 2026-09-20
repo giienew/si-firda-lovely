@@ -52,6 +52,22 @@ public class MainActivity extends AppCompatActivity {
         initEnvironment();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initEnvironment();
+    }
+
+    private void setControlsEnabled(boolean enabled) {
+        switchServer.setEnabled(enabled);
+        btnRun.setEnabled(enabled);
+        btnStop.setEnabled(enabled);
+        btnScripts.setEnabled(enabled);
+        btnPickFile.setEnabled(enabled);
+        btnOverlay.setEnabled(enabled);
+        btnInstallFrida.setEnabled(enabled);
+    }
+
     private void initViews() {
         switchServer = findViewById(R.id.switchServer);
         txtStatus = findViewById(R.id.txtStatus);
@@ -67,6 +83,12 @@ public class MainActivity extends AppCompatActivity {
         scrollTerminal = findViewById(R.id.scrollTerminal);
 
         switchServer.setOnCheckedChangeListener((btn, isChecked) -> {
+            if (!RootShell.isRootAvailable()) {
+                appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
+                switchServer.setChecked(false);
+                setControlsEnabled(false);
+                return;
+            }
             if (isChecked) {
                 appendLog("[SYSTEM] Menjalankan frida-server daemon...");
                 FridaManager.startServer(new SimpleLogCallback("Frida Server ON"));
@@ -79,6 +101,8 @@ public class MainActivity extends AppCompatActivity {
         btnPickFile.setOnClickListener(v -> {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("*/*");
+            String[] mimes = {"application/javascript", "text/javascript", "text/plain", "application/octet-stream"};
+            intent.putExtra(Intent.EXTRA_MIME_TYPES, mimes);
             startActivityForResult(intent, PICK_SCRIPT_REQUEST);
         });
 
@@ -97,10 +121,13 @@ public class MainActivity extends AppCompatActivity {
 
     private void initEnvironment() {
         if (!RootShell.isRootAvailable()) {
-            txtStatus.setText("Status: ROOT TIDAK TERDETEKSI (KSU/Magisk/APatch dibutuhkan)");
+            txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root di Magisk/KSU, lalu buka ulang app");
             txtStatus.setTextColor(getColor(R.color.accent_danger));
+            setControlsEnabled(false);
             return;
         }
+
+        setControlsEnabled(true);
 
         boolean installed = FridaManager.isFridaServerInstalled();
         boolean running = FridaManager.isFridaRunning();
@@ -159,6 +186,14 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        if (!RootShell.isRootAvailable()) {
+            appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
+            txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root, lalu restart app");
+            txtStatus.setTextColor(getColor(R.color.accent_danger));
+            setControlsEnabled(false);
+            return;
+        }
+
         if (!FridaManager.isFridaRunning()) {
             appendLog("[SYSTEM] frida-server belum jalan, start dulu...");
             FridaManager.startServer(new SimpleLogCallback("AutoStart"));
@@ -170,12 +205,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String serverVer = FridaManager.getInstalledVersion().trim();
-        String clientVer = RootShell.runCommandSync("frida --version 2>/dev/null || echo unknown").trim();
-        if (!"unknown".equals(clientVer) && !clientVer.isEmpty()
-                && !serverVer.isEmpty() && !serverVer.equals(clientVer)) {
-            appendLog("[WARN] Version mismatch! server=" + serverVer + " client=" + clientVer
-                    + " — device mungkin tidak terdeteksi (waiting for USB)");
-        }
+        new Thread(() -> {
+            final String clientVer = RootShell.runCommandSync("frida --version 2>/dev/null || echo unknown").trim();
+            runOnUiThread(() -> {
+                if (!"unknown".equals(clientVer) && !clientVer.isEmpty()
+                        && !serverVer.isEmpty() && !serverVer.equals(clientVer)) {
+                    appendLog("[WARN] Version mismatch! server=" + serverVer + " client=" + clientVer);
+                }
+            });
+        }).start();
 
         appendLog("\n[START] Hooking target: " + pkg);
         StringBuilder cmd = new StringBuilder();
@@ -328,6 +366,17 @@ public class MainActivity extends AppCompatActivity {
         } catch (Exception e) {
             appendLog("[ERROR] copyAssetToCache: " + e.getMessage());
             return null;
+        }
+    }
+
+    @Override
+    public void onUserLeaveHint() {
+        super.onUserLeaveHint();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            try {
+                enterPictureInPictureMode(
+                        new android.app.PictureInPictureParams.Builder().build());
+            } catch (Exception ignored) {}
         }
     }
 
