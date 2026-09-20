@@ -126,6 +126,15 @@
                 android:textSize="14sp" />
 
             <Button
+                android:id="@+id/btnPickApp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Apps"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/accent_success"
+                android:textAllCaps="false"/>
+
+            <Button
                 android:id="@+id/btnPickFile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -168,6 +177,18 @@
                 android:backgroundTint="@color/accent_danger"/>
         </LinearLayout>
     </LinearLayout>
+
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabSessions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:background="@color/theme_card"
+        app:tabTextColor="@color/text_sub"
+        app:tabSelectedTextColor="@color/accent_primary"
+        app:tabIndicatorColor="@color/accent_primary"
+        app:tabMode="scrollable"
+        android:layout_marginTop="12dp"/>
 
     <!-- Terminal Output -->
     <TextView
