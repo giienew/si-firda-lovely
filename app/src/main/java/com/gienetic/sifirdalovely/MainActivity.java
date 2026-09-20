@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
             final boolean hasRoot = RootShell.isRootAvailable();
             runOnUiThread(() -> {
                 if (!hasRoot) {
-                    txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root di Magisk/KSU, lalu buka ulang app");
+                    txtStatus.setText("Status: ROOT BELUM DIBERIKAN — nyalakan switch \u2192 muncul prompt Magisk \u2192 GRANT");
                     txtStatus.setTextColor(getColor(R.color.accent_danger));
                     setControlsEnabled(false);
                 } else {
@@ -116,13 +116,16 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
     }
 
     private void setControlsEnabled(boolean enabled) {
-        switchServer.setEnabled(enabled);
+        // switchServer stays ENABLED even without root — tapping it triggers
+        // the Magisk grant prompt. Disabling it = dead end, user can never
+        // request root from inside the app.
+        switchServer.setEnabled(true);
         btnRun.setEnabled(enabled);
         btnStop.setEnabled(enabled);
         btnScripts.setEnabled(enabled);
         btnPickFile.setEnabled(enabled);
-        btnPickApp.setEnabled(enabled);
-        btnInstallFrida.setEnabled(enabled);
+        btnPickApp.setEnabled(true);
+        btnInstallFrida.setEnabled(true);
     }
 
     // ---------------------------------------------------------------- views
@@ -234,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
             if (!RootShell.isRootAvailable()) {
                 runOnUiThread(() -> {
                     appendLog("[ERROR] ROOT tidak tersedia. Aktifkan root di Magisk/KSU/APatch dulu.");
-                    txtStatus.setText("Status: ROOT TIDAK ADA — aktifkan root, lalu restart app");
+                    txtStatus.setText("Status: ROOT BELUM DIBERIKAN — nyalakan switch \u2192 GRANT di prompt Magisk");
                     txtStatus.setTextColor(getColor(R.color.accent_danger));
                     setControlsEnabled(false);
                     btnRun.setEnabled(true);
@@ -495,11 +498,20 @@ public class MainActivity extends AppCompatActivity implements ScriptSession.Log
         super.onUserLeaveHint();
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             try {
-                android.app.PictureInPictureParams params =
+                android.app.PictureInPictureParams.Builder b =
                         new android.app.PictureInPictureParams.Builder()
-                                .setAspectRatio(new android.util.Rational(16, 9))
-                                .build();
-                enterPictureInPictureMode(params);
+                                .setAspectRatio(new android.util.Rational(16, 9));
+                // Crop PiP to the terminal area only — not the whole app
+                if (scrollTerminal != null && scrollTerminal.isShown()) {
+                    int[] loc = new int[2];
+                    scrollTerminal.getLocationInWindow(loc);
+                    android.graphics.Rect r = new android.graphics.Rect(
+                            loc[0], loc[1],
+                            loc[0] + scrollTerminal.getWidth(),
+                            loc[1] + scrollTerminal.getHeight());
+                    b.setSourceRectHint(r);
+                }
+                enterPictureInPictureMode(b.build());
             } catch (Exception ignored) {}
         } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             try {
